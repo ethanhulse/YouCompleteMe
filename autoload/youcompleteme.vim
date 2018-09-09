@@ -403,9 +403,18 @@ function! s:AllowedToCompleteInBuffer( buffer )
     return 0
   endif
 
-  let whitelist_allows = has_key( g:ycm_filetype_whitelist, '*' ) ||
-        \ has_key( g:ycm_filetype_whitelist, buffer_filetype )
-  let blacklist_allows = !has_key( g:ycm_filetype_blacklist, buffer_filetype )
+  try
+    let whitelist_allows = has_key( g:ycm_filetype_whitelist, '*' ) ||
+          \ has_key( g:ycm_filetype_whitelist, buffer_filetype )
+  catch /^Vim\%((\a\+)\)\=:E715/
+    let whitelist_allows = 1
+  endtry
+
+  try
+    let blacklist_allows = !has_key( g:ycm_filetype_blacklist, buffer_filetype )
+  catch /^Vim\%((\a\+)\)\=:E715/
+    let blacklist_allows = 1
+  endtry
 
   let allowed = whitelist_allows && blacklist_allows
   if allowed
